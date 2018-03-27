@@ -1,7 +1,7 @@
 module Main where
 
-import Game
-import Art
+import Game (gameLoop)
+import Art (drawTitle, drawScene)
 
 main :: IO ()
 main = do

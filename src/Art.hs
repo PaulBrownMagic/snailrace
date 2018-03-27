@@ -1,4 +1,16 @@
-module Art where
+module Art (drawTitle,
+            drawScene,
+            blitScene) where
+
+shift' :: Char -> Int -> String
+shift' c x = take x $ repeat c
+
+shift :: Int -> String
+shift = shift' ' '
+
+
+clear :: IO ()
+clear = putStr "\ESC[2J"
 
 snailA :: [String]
 snailA = ["        _________             @"
@@ -23,21 +35,19 @@ snailB = ["        _________           @"
 drawTitle :: IO ()
 drawTitle = do
     putStrLn "\n"
-    putStrLn $ gap ++ "   _____             _ ______"
-    putStrLn $ gap ++ "  / ___/____  ____ _(_) / __ \\____ _________"
-    putStrLn $ gap ++ "  \\__ \\/ __ \\/ __ `/ / / /_/ / __ `/ ___/ _ \\"
-    putStrLn $ gap ++" ___/ / / / / /_/ / / / _, _/ /_/ / /__/  __/"
-    putStrLn $ gap ++ "/____/_/ /_/\\__,_/_/_/_/ |_|\\__,_/\\___/\\___/\n"
+    put "   _____             _ ______"
+    put "  / ___/____  ____ _(_) / __ \\____ _________"
+    put "  \\__ \\/ __ \\/ __ `/ / / /_/ / __ `/ ___/ _ \\"
+    put " ___/ / / / / /_/ / / / _, _/ /_/ / /__/  __/"
+    put "/____/_/ /_/\\__,_/_/_/_/ |_|\\__,_/\\___/\\___/\n"
     where
-        gap = take 25 $ repeat ' '
-
-
+        put s = putStrLn $ gap ++ s
+        gap = shift 25
 
 finishLine :: String -> String
 finishLine s = s ++ toLine ++ "#"
     where
-        toLine = take x $ repeat ' '
-        x = 100 - length s
+        toLine = shift $ 100 - length s
 
 putFinLn :: String -> IO ()
 putFinLn s = putStrLn $ finishLine s
@@ -47,16 +57,10 @@ chooseSnail f = if f - (fromIntegral $ floor f) > 0.5
                 then snailA
                 else snailB
 
-shift :: Char -> Int -> String
-shift c x = take x $ repeat c
-
-clear :: IO ()
-clear = putStr "\ESC[2J"
-
 drawList :: Int -> [String] -> IO ()
-drawList dist [x] = putFinLn $ (shift '_' dist) ++ x
+drawList dist [x] = putFinLn $ (shift' '_' dist) ++ x
 drawList dist (x:xs) = do
-    putFinLn $ (shift ' ' dist) ++ x
+    putFinLn $ (shift dist) ++ x
     drawList dist xs
 
 drawSnail :: Float -> IO ()
@@ -66,9 +70,9 @@ drawSnail f = do
     drawList dist snail
     putFinLn ""
     putFinLn ""
-              where
-                  snail = chooseSnail f
-                  dist = floor f
+        where
+             snail = chooseSnail f
+             dist = floor f
 
 drawScene :: Float -> Float -> IO ()
 drawScene f1 f2 = do
