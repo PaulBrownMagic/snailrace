@@ -4,7 +4,8 @@ module Game
 
 import System.IO (hGetChar, hSetBuffering, stdin, BufferMode(NoBuffering))
 import System.Exit (exitSuccess)
-import Art (blitScene)
+import Art (blitScene, resetColor, shift, setGreenText)
+import Conf (raceLength)
 
 player :: Float
 player = 0.0
@@ -39,18 +40,21 @@ runLogic c p1 p2
     | otherwise = gameLoop' p1 p2
 
 gameWin :: String -> Float -> IO ()
-gameWin s p = if p >= 70.5
+gameWin s p = if p >= (fromIntegral raceLength) - 28.5
               then do
-                  putStrLn s
+                  setGreenText
+                  putStrLn $ shift 30 ++ s
                   getLine
+                  resetColor
+                  putStrLn "\n"
                   exitSuccess
               else return ()
 
 p1GameWin :: Float -> IO ()
-p1GameWin = gameWin "Player 1 Wins!"
+p1GameWin = gameWin "Snail 1 Wins!"
 
 p2GameWin :: Float -> IO ()
-p2GameWin = gameWin "Player 2 Wins!"
+p2GameWin = gameWin "Snail 2 Wins!"
 
 gameOver :: Float -> Float -> IO ()
 gameOver p1 p2 = do
